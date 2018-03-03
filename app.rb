@@ -39,11 +39,17 @@ class Garden
     uri = URI.parse("https://github.com/users/#{user_name}/contributions")
     @garden_svg = Net::HTTP.get_response(uri).body
     doc = Nokogiri::HTML.parse(@garden_svg)
+    rects = doc.css("rect").reverse
 
+    @consecutive_days, @consecutive_total_contribs, @consecutive_average_contribs = consecutive_stats(rects)
+    @contributed_days_last_year, @total_contribs_last_year, @average_contribs_last_year = last_year_stats(rects)
+  end
+
+  private
+
+  def consecutive_stats(rects)
     consecutive_days = 0
     consecutive_total_contribs = 0
-
-    rects = doc.css("rect").reverse
 
     rects[1..-1].each do |rect|
       break if rect.attributes["data-count"].value.to_i == 0
@@ -54,21 +60,18 @@ class Garden
       consecutive_days += 1
       consecutive_total_contribs += rects[0].attributes["data-count"].value.to_i
     end
-    @consecutive_days = consecutive_days
-    @consecutive_total_contribs = consecutive_total_contribs
-    @consecutive_average_contribs = (consecutive_total_contribs.to_f / consecutive_days).round(2)
+    [consecutive_days, consecutive_total_contribs, (consecutive_total_contribs.to_f / consecutive_days).round(2)]
+  end
 
+  def last_year_stats(rects)
     contributed_days_last_year = 0
     total_contribs_last_year = 0
+
     rects.each do |rect|
       next if rect.attributes["data-count"].value.to_i == 0
       contributed_days_last_year += 1
       total_contribs_last_year += rect.attributes["data-count"].value.to_i
     end
-    @contributed_days_last_year = contributed_days_last_year
-    @total_contribs_last_year = total_contribs_last_year
-    @average_contribs_last_year = (total_contribs_last_year / contributed_days_last_year).round(2)
+    [contributed_days_last_year, total_contribs_last_year, (total_contribs_last_year / contributed_days_last_year).round(2)]
   end
-
-
 end
