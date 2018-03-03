@@ -4,6 +4,7 @@ require 'sinatra/json'
 require 'uri'
 require 'net/http'
 require 'nokogiri'
+require 'chartkick'
 #require 'pry'
 
 get '/' do
@@ -29,6 +30,7 @@ get "/:name" do
   @average_contribs_last_year = garden.average_contribs_last_year
 
   #binding.pry
+  @graph_data = [["A", 1000], ["B", 2000], ["C", 7000]]
   erb  :garden
 end
 
