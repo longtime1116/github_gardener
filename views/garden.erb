@@ -46,4 +46,8 @@
     </li>
   </ul>
 </div>
-<%#= line_chart @graph_data %>
+<%= line_chart @graph_data, library: {
+  hAxis: {:title => "Date"},
+  vAxis: {:title => "contribution counts"},
+  curveType: "none",
+} %>
