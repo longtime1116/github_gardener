@@ -1,57 +1,13 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="/css/index.css" />
 <html>
   <head>
     <meta charset="UTF-8">
   </head>
   <body>
-    <div>
-      <%= "username: #{@user_name}" %>
-    </div>
-    <div>
-      <%= @garden_svg %>
-    </div>
-    <div>
-      <ul class="boxes">
-        <li class="box">
-          consecutive days
-          <div class="consecutive_result">
-            <%= @consecutive_days %> days
-          </div>
-        </li>
-        <li class="box">
-          total consecutive contributions
-          <div class="consecutive_result">
-            <%= @consecutive_total_contribs %>
-          </div>
-        </li>
-        <li class="box">
-          average consecutive contributions
-          <div class="consecutive_result">
-            <%= @consecutive_average_contribs %>
-          </div>
-        </li>
-      </ul>
-      <ul class="boxes">
-        <li class="box">
-          contributed days<br/> last year
-          <div class="consecutive_result">
-            <%= @contributed_days_last_year %> days
-          </div>
-        </li>
-        <li class="box">
-          total contributions<br/> last year
-          <div class="consecutive_result">
-            <%= @total_contribs_last_year %>
-          </div>
-        </li>
-        <li class="box">
-          average contributions<br/> last year
-          <div class="consecutive_result">
-            <%= @average_contribs_last_year %>
-          </div>
-        </li>
-      </ul>
-    </div>
+    Let's show your github calender.
+    <form action="/redirect_to_garden" method="post">
+      <input type="text" name="user_name" placeholder="your username" />
+      <input type="submit" value="Submit" />
+    </form>
   </body>
 </html>

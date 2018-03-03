@@ -7,13 +7,20 @@ require 'nokogiri'
 #require 'pry'
 
 get '/' do
-  'hello world'
+  erb :index
+end
+
+post '/redirect_to_garden' do
+  p params
+  redirect "/#{params[:user_name]}"
 end
 
 get "/:name" do
   @user_name = params[:name]
   garden = Garden.new(@user_name)
   @garden_svg = garden.garden_svg
+  redirect "/" if @garden_svg.nil?
+
   @consecutive_days = garden.consecutive_days
   @consecutive_total_contribs = garden.consecutive_total_contribs
   @consecutive_average_contribs = garden.consecutive_average_contribs
@@ -22,7 +29,7 @@ get "/:name" do
   @average_contribs_last_year = garden.average_contribs_last_year
 
   #binding.pry
-  erb  :index
+  erb  :garden
 end
 
 
@@ -38,6 +45,11 @@ class Garden
   def initialize(user_name)
     uri = URI.parse("https://github.com/users/#{user_name}/contributions")
     @garden_svg = Net::HTTP.get_response(uri).body
+    if @garden_svg.to_s == "Not Found"
+      @garden_svg = nil
+      return
+    end
+
     doc = Nokogiri::HTML.parse(@garden_svg)
     rects = doc.css("rect").reverse
 
