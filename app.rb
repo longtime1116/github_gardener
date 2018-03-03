@@ -27,8 +27,7 @@ get "/:name" do
   @contributed_days_last_year = garden.contributed_days_last_year
   @total_contribs_last_year = garden.total_contribs_last_year
   @average_contribs_last_year = garden.average_contribs_last_year
-
-  @graph_data = [["A", 1000], ["B", 2000], ["C", 7000]]
+  @graph_data = garden.contribs_per_week
   erb  :garden
 end
 
@@ -40,7 +39,8 @@ class Garden
               :consecutive_average_contribs,
               :contributed_days_last_year,
               :total_contribs_last_year,
-              :average_contribs_last_year
+              :average_contribs_last_year,
+              :contribs_per_week
 
   def initialize(user_name)
     uri = URI.parse("https://github.com/users/#{user_name}/contributions")
@@ -51,10 +51,11 @@ class Garden
     end
 
     doc = Nokogiri::HTML.parse(@garden_svg)
-    rects = doc.css("rect").reverse
+    rects = doc.css("rect")
 
-    @consecutive_days, @consecutive_total_contribs, @consecutive_average_contribs = consecutive_stats(rects)
-    @contributed_days_last_year, @total_contribs_last_year, @average_contribs_last_year = last_year_stats(rects)
+    @consecutive_days, @consecutive_total_contribs, @consecutive_average_contribs = consecutive_stats(rects.reverse)
+    @contributed_days_last_year, @total_contribs_last_year, @average_contribs_last_year = last_year_stats(rects.reverse)
+    @contribs_per_week = contributions_per_week(rects)
   end
 
   private
@@ -87,5 +88,20 @@ class Garden
     end
     return [contributed_days_last_year, total_contribs_last_year, 0.0] if contributed_days_last_year == 0
     [contributed_days_last_year, total_contribs_last_year, (total_contribs_last_year / contributed_days_last_year).round(2)]
+  end
+
+  def contributions_per_week(rects)
+    count = 0
+    value = ""
+    rects.reduce({}) do |data, rect|
+      if count == 0
+        value = rect.attributes["data-date"].value
+        data[value] = rect.attributes["data-count"].value.to_i
+      else
+        data[value] = data[value] + rect.attributes["data-count"].value.to_i
+      end
+      count = (count + 1) % 7
+      data
+    end
   end
 end
