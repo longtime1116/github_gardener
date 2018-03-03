@@ -5,7 +5,6 @@ require 'uri'
 require 'net/http'
 require 'nokogiri'
 require 'chartkick'
-#require 'pry'
 
 get '/' do
   erb :index
@@ -29,8 +28,7 @@ get "/:name" do
   @total_contribs_last_year = garden.total_contribs_last_year
   @average_contribs_last_year = garden.average_contribs_last_year
 
-  #binding.pry
-  @graph_data = [["A", 1000], ["B", 2000], ["C", 7000]]
+  #@graph_data = [["A", 1000], ["B", 2000], ["C", 7000]]
   erb  :garden
 end
 
