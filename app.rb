@@ -72,6 +72,7 @@ class Garden
       consecutive_days += 1
       consecutive_total_contribs += rects[0].attributes["data-count"].value.to_i
     end
+    return [consecutive_days, consecutive_total_contribs, 0.0] if consecutive_days == 0
     [consecutive_days, consecutive_total_contribs, (consecutive_total_contribs.to_f / consecutive_days).round(2)]
   end
 
@@ -84,6 +85,7 @@ class Garden
       contributed_days_last_year += 1
       total_contribs_last_year += rect.attributes["data-count"].value.to_i
     end
+    return [contributed_days_last_year, total_contribs_last_year, 0.0] if contributed_days_last_year == 0
     [contributed_days_last_year, total_contribs_last_year, (total_contribs_last_year / contributed_days_last_year).round(2)]
   end
 end
