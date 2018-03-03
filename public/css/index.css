@@ -1,0 +1,13 @@
+.boxes {
+  padding: 0;
+}
+.box {
+  display: inline-block;
+  width: 190px;
+  margin: 1em;
+  text-align: center;
+  font-size: 80%;
+}
+.consecutive_result {
+  font-size: 150%;
+}
