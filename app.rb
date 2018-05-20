@@ -11,7 +11,6 @@ get '/' do
 end
 
 post '/redirect_to_garden' do
-  p params
   redirect "/#{params[:user_name]}"
 end
 
