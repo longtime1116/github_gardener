@@ -91,17 +91,18 @@ class Garden
   end
 
   def contributions_per_week(rects)
-    count = 0
-    value = ""
-    rects.reduce({}) do |data, rect|
-      if count == 0
-        value = rect.attributes["data-date"].value
-        data[value] = rect.attributes["data-count"].value.to_i
-      else
-        data[value] = data[value] + rect.attributes["data-count"].value.to_i
-      end
-      count = (count + 1) % 7
-      data
+    data = {}
+    rects.each_slice(7) do |week_rects|
+      data[date_of(week_rects.first)] = week_rects.sum { |rect| contribute_count_of(rect) }
     end
+    data
+  end
+
+  def date_of(rect)
+    rect.attributes["data-date"].value
+  end
+
+  def contribute_count_of(rect)
+    rect.attributes["data-count"].value.to_i
   end
 end
