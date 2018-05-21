@@ -1,27 +1,27 @@
 <div>
-  <%= "username: #{@user_name}" %>
+  <%= "username: #{@garden.user_name}" %>
 </div>
 <div>
-  <%= @garden_svg %>
+  <%= @garden.garden_svg %>
 </div>
 <div>
   <ul class="boxes">
     <li class="box">
       consecutive days
       <div class="consecutive_result">
-        <%= @consecutive_days %> days
+        <%= @garden.consecutive_days %> days
       </div>
     </li>
     <li class="box">
       total consecutive contributions
       <div class="consecutive_result">
-        <%= @consecutive_total_contribs %>
+        <%= @garden.consecutive_total_contribs %>
       </div>
     </li>
     <li class="box">
       average consecutive contributions
       <div class="consecutive_result">
-        <%= @consecutive_average_contribs %>
+        <%= @garden.consecutive_average_contribs %>
       </div>
     </li>
   </ul>
@@ -29,24 +29,24 @@
     <li class="box">
       contributed days<br/> last year
       <div class="consecutive_result">
-        <%= @contributed_days_last_year %> days
+        <%= @garden.contributed_days_last_year %> days
       </div>
     </li>
     <li class="box">
       total contributions<br/> last year
       <div class="consecutive_result">
-        <%= @total_contribs_last_year %>
+        <%= @garden.total_contribs_last_year %>
       </div>
     </li>
     <li class="box">
       average contributions<br/> last year
       <div class="consecutive_result">
-        <%= @average_contribs_last_year %>
+        <%= @garden.average_contribs_last_year %>
       </div>
     </li>
   </ul>
 </div>
-<%= line_chart @graph_data, library: {
+<%= line_chart @garden.contribs_per_week, library: {
   hAxis: {:title => "Week"},
   vAxis: {:title => "Contributions"},
   curveType: "none",
