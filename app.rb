@@ -36,29 +36,11 @@ class Garden
   end
 
   def consecutive_days
-    rects = @rects.reverse
-    count = 0
-
-    rects[1..-1].each do |rect|
-      break if contribute_count_of(rect) == 0
-      count += 1
-    end
-
-    count += 1 if contribute_count_of(rects[0]) != 0
-    count
+    consecutive_each { |_| 1 }
   end
 
   def consecutive_total_contribs
-    rects = @rects.reverse
-    total = 0
-
-    rects[1..-1].each do |rect|
-      break if contribute_count_of(rect) == 0
-      total += contribute_count_of(rect)
-    end
-
-    total += contribute_count_of(rects[0]) if contribute_count_of(rects[0]) != 0
-    total
+    consecutive_each { |rect| contribute_count_of(rect) }
   end
 
   def consecutive_average_contribs
@@ -105,6 +87,19 @@ class Garden
     garden_svg = Net::HTTP.get_response(uri).body
     return nil if garden_svg.to_s == "Not Found"
     garden_svg
+  end
+
+  def consecutive_each
+    rects = @rects.reverse
+    count = 0
+
+    rects[1..-1].each do |rect|
+      break if contribute_count_of(rect) == 0
+      count += yield rect
+    end
+
+    count += yield rect if contribute_count_of(rects[0]) != 0
+    count
   end
 
   def date_of(rect)
