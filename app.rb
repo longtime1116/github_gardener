@@ -36,11 +36,11 @@ class Garden
   end
 
   def consecutive_days
-    consecutive_each { |_| 1 }
+    consecutive_each(@rects.reverse) { |_| 1 }
   end
 
   def consecutive_total_contribs
-    consecutive_each { |rect| contribute_count_of(rect) }
+    consecutive_each(@rects.reverse) { |rect| contribute_count_of(rect) }
   end
 
   def consecutive_average_contribs
@@ -53,13 +53,7 @@ class Garden
   end
 
   def total_contribs_last_year
-    total = 0
-
-    @rects.each do |rect|
-      next if contribute_count_of(rect) == 0
-      total += contribute_count_of(rect)
-    end
-    total
+    total_contribute_count_of(@rects)
   end
 
   def average_contribs_last_year
@@ -67,10 +61,10 @@ class Garden
     (total_contribs_last_year / contributed_days_last_year).round(2)
   end
 
-  def contribs_per_week
+  def contribs_per_week_for_chart
     data = {}
     @rects.each_slice(7) do |week_rects|
-      data[date_of(week_rects.first)] = week_rects.sum { |rect| contribute_count_of(rect) }
+      data[date_of(week_rects.first)] = total_contribute_count_of(week_rects)
     end
     data
   end
@@ -84,8 +78,7 @@ class Garden
     garden_svg
   end
 
-  def consecutive_each
-    rects = @rects.reverse
+  def consecutive_each(rects)
     count = 0
 
     rects[1..-1].each do |rect|
@@ -103,5 +96,9 @@ class Garden
 
   def contribute_count_of(rect)
     rect.attributes["data-count"].value.to_i
+  end
+
+  def total_contribute_count_of(rects)
+    rects.sum { |rect| contribute_count_of(rect) }
   end
 end

@@ -46,7 +46,7 @@
     </li>
   </ul>
 </div>
-<%= line_chart @garden.contribs_per_week, library: {
+<%= line_chart @garden.contribs_per_week_for_chart, library: {
   hAxis: {:title => "Week"},
   vAxis: {:title => "Contributions"},
   curveType: "none",
