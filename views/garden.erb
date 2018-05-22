@@ -1,5 +1,5 @@
 <div>
-  <%= "username: #{@garden.user_name}" %>
+  user name: <a href=<%= "https://github.com/#{@garden.user_name}" %>><%= @garden.user_name %></a>
 </div>
 <div>
   <%= @garden.garden_svg %>
