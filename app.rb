@@ -49,12 +49,7 @@ class Garden
   end
 
   def contributed_days_last_year
-    count = 0
-    @rects.each do |rect|
-      next if contribute_count_of(rect) == 0
-      count += 1
-    end
-    count
+    @rects.count { |rect| contribute_count_of(rect) != 0 }
   end
 
   def total_contribs_last_year
