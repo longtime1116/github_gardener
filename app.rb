@@ -86,7 +86,7 @@ class Garden
       count += yield rect
     end
 
-    count += yield rect if contribute_count_of(rects[0]) != 0
+    count += yield rects[0] if contribute_count_of(rects[0]) != 0
     count
   end
 
