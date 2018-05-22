@@ -11,97 +11,94 @@ get '/' do
 end
 
 post '/redirect_to_garden' do
-  p params
   redirect "/#{params[:user_name]}"
 end
 
 get "/:name" do
-  @user_name = params[:name]
-  garden = Garden.new(@user_name)
-  @garden_svg = garden.garden_svg
-  redirect "/" if @garden_svg.nil?
+  @garden = Garden.new(params[:name])
+  redirect "/" if @garden.has_no_owner?
 
-  @consecutive_days = garden.consecutive_days
-  @consecutive_total_contribs = garden.consecutive_total_contribs
-  @consecutive_average_contribs = garden.consecutive_average_contribs
-  @contributed_days_last_year = garden.contributed_days_last_year
-  @total_contribs_last_year = garden.total_contribs_last_year
-  @average_contribs_last_year = garden.average_contribs_last_year
-  @graph_data = garden.contribs_per_week
   erb  :garden
 end
 
 
 class Garden
-  attr_reader :garden_svg,
-              :consecutive_days,
-              :consecutive_total_contribs,
-              :consecutive_average_contribs,
-              :contributed_days_last_year,
-              :total_contribs_last_year,
-              :average_contribs_last_year,
-              :contribs_per_week
+  attr_reader :user_name, :garden_svg
 
   def initialize(user_name)
-    uri = URI.parse("https://github.com/users/#{user_name}/contributions")
-    @garden_svg = Net::HTTP.get_response(uri).body
-    if @garden_svg.to_s == "Not Found"
-      @garden_svg = nil
-      return
+    @user_name = user_name
+    @garden_svg = fetch_garden_svg
+    @rects = Nokogiri::HTML.parse(@garden_svg).css("rect")
+  end
+
+  def has_no_owner?
+    @garden_svg.nil?
+  end
+
+  def consecutive_days
+    consecutive_each(@rects.reverse) { |_| 1 }
+  end
+
+  def consecutive_total_contribs
+    consecutive_each(@rects.reverse) { |rect| contribute_count_of(rect) }
+  end
+
+  def consecutive_average_contribs
+    return 0.0 if consecutive_days == 0
+    (consecutive_total_contribs.to_f / consecutive_days).round(2)
+  end
+
+  def contributed_days_last_year
+    @rects.count { |rect| contribute_count_of(rect) != 0 }
+  end
+
+  def total_contribs_last_year
+    total_contribute_count_of(@rects)
+  end
+
+  def average_contribs_last_year
+    return 0.0 if contributed_days_last_year == 0
+    (total_contribs_last_year / contributed_days_last_year).round(2)
+  end
+
+  def contribs_per_week_for_chart
+    data = {}
+    @rects.each_slice(7) do |week_rects|
+      data[date_of(week_rects.first)] = total_contribute_count_of(week_rects)
     end
-
-    doc = Nokogiri::HTML.parse(@garden_svg)
-    rects = doc.css("rect")
-
-    @consecutive_days, @consecutive_total_contribs, @consecutive_average_contribs = consecutive_stats(rects.reverse)
-    @contributed_days_last_year, @total_contribs_last_year, @average_contribs_last_year = last_year_stats(rects.reverse)
-    @contribs_per_week = contributions_per_week(rects)
+    data
   end
 
   private
 
-  def consecutive_stats(rects)
-    consecutive_days = 0
-    consecutive_total_contribs = 0
+  def fetch_garden_svg
+    uri = URI.parse("https://github.com/users/#{user_name}/contributions")
+    garden_svg = Net::HTTP.get_response(uri).body
+    return nil if garden_svg.to_s == "Not Found"
+    garden_svg
+  end
+
+  def consecutive_each(rects)
+    count = 0
 
     rects[1..-1].each do |rect|
-      break if rect.attributes["data-count"].value.to_i == 0
-      consecutive_days += 1
-      consecutive_total_contribs += rect.attributes["data-count"].value.to_i
+      break if contribute_count_of(rect) == 0
+      count += yield rect
     end
-    if rects[0].attributes["data-count"].value.to_i != 0
-      consecutive_days += 1
-      consecutive_total_contribs += rects[0].attributes["data-count"].value.to_i
-    end
-    return [consecutive_days, consecutive_total_contribs, 0.0] if consecutive_days == 0
-    [consecutive_days, consecutive_total_contribs, (consecutive_total_contribs.to_f / consecutive_days).round(2)]
+
+    count += yield rect if contribute_count_of(rects[0]) != 0
+    count
   end
 
-  def last_year_stats(rects)
-    contributed_days_last_year = 0
-    total_contribs_last_year = 0
-
-    rects.each do |rect|
-      next if rect.attributes["data-count"].value.to_i == 0
-      contributed_days_last_year += 1
-      total_contribs_last_year += rect.attributes["data-count"].value.to_i
-    end
-    return [contributed_days_last_year, total_contribs_last_year, 0.0] if contributed_days_last_year == 0
-    [contributed_days_last_year, total_contribs_last_year, (total_contribs_last_year / contributed_days_last_year).round(2)]
+  def date_of(rect)
+    rect.attributes["data-date"].value
   end
 
-  def contributions_per_week(rects)
-    count = 0
-    value = ""
-    rects.reduce({}) do |data, rect|
-      if count == 0
-        value = rect.attributes["data-date"].value
-        data[value] = rect.attributes["data-count"].value.to_i
-      else
-        data[value] = data[value] + rect.attributes["data-count"].value.to_i
-      end
-      count = (count + 1) % 7
-      data
-    end
+  def contribute_count_of(rect)
+    rect.attributes["data-count"].value.to_i
+  end
+
+  def total_contribute_count_of(rects)
+    rects.sum { |rect| contribute_count_of(rect) }
   end
 end
