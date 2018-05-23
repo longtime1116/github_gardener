@@ -46,9 +46,19 @@
     </li>
   </ul>
 </div>
+</b>
+
+<%= line_chart @garden.contribs_per_day_for_chart, library: {
+  title: "contributions per day (last 60 days)",
+  hAxis: {title: "Day", format: 'M/d(EEE)'},
+  vAxis: {title: "Contributions"},
+  curveType: "none",
+  colors: ["#196127"],
+} %>
 <%= line_chart @garden.contribs_per_week_for_chart, library: {
-  hAxis: {:title => "Week"},
-  vAxis: {:title => "Contributions"},
+  title: "contributions per week",
+  hAxis: {title: "Week"},
+  vAxis: {title: "Contributions"},
   curveType: "none",
   colors: ["#196127"],
 } %>
