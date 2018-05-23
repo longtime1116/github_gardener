@@ -5,6 +5,7 @@ require 'uri'
 require 'net/http'
 require 'nokogiri'
 require 'chartkick'
+require 'pry'
 
 get '/' do
   erb :index
@@ -59,6 +60,13 @@ class Garden
   def average_contribs_last_year
     return 0.0 if contributed_days_last_year == 0
     (total_contribs_last_year / contributed_days_last_year).round(2)
+  end
+
+  def contribs_per_day_for_chart
+    @rects.reverse[0..60].reverse.reduce({}) do |data, rect|
+      data[date_of(rect)] = contribute_count_of(rect)
+      data
+    end
   end
 
   def contribs_per_week_for_chart
