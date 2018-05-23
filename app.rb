@@ -5,7 +5,6 @@ require 'uri'
 require 'net/http'
 require 'nokogiri'
 require 'chartkick'
-require 'pry'
 
 get '/' do
   erb :index
