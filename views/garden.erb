@@ -1,8 +1,10 @@
 <div>
   username: <a href=<%= "https://github.com/#{@garden.user_name}" %>><%= @garden.user_name %></a>
 </div>
-<div>
-  <%= @garden.garden_svg %>
+<div class=svg>
+  <svg width=750px height=100px dominant-baseline="central">
+    <%= @garden.garden_svg %>
+  </svg>
 </div>
 <div>
   <ul class="boxes">
