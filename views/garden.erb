@@ -6,6 +6,7 @@
     <%= @garden.garden_svg %>
   </svg>
 </div>
+
 <div>
   <ul class="boxes">
     <li class="box">
@@ -65,4 +66,15 @@
   colors: ["#196127"],
 } %>
 
+<!--
+<div>
+  <% if @garden.garden_svg_each_year.present? %>
+    <% @garden.garden_svg_each_year.each do |svg| %>
+      <svg width=750px height=100px dominant-baseline="central">
+        <%= svg %>
+      </svg>
+    <% end %>
+  <% end %>
+<div>
+-->
 <a href='/'>back</a>

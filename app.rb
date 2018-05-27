@@ -5,6 +5,9 @@ require 'uri'
 require 'net/http'
 require 'nokogiri'
 require 'chartkick'
+require 'active_support'
+require 'active_support/core_ext'
+require 'date'
 
 get '/' do
   erb :index
@@ -23,11 +26,12 @@ end
 
 
 class Garden
-  attr_reader :user_name, :garden_svg
+  attr_reader :user_name, :garden_svg, :garden_svg_each_year
 
   def initialize(user_name)
     @user_name = user_name
     @garden_svg = fetch_garden_svg
+    @garden_svg_each_year = fetch_garden_svg_each_year
     @rects = Nokogiri::HTML.parse(@garden_svg).css("rect")
   end
 
@@ -78,11 +82,27 @@ class Garden
 
   private
 
-  def fetch_garden_svg
-    uri = URI.parse("https://github.com/users/#{user_name}/contributions")
+  def fetch_garden_svg(query_params = nil)
+    uri = URI.parse("https://github.com/users/#{user_name}/contributions" +
+                    query_string(query_params))
     garden_svg = Net::HTTP.get_response(uri).body
     return nil if garden_svg.to_s == "Not Found"
     garden_svg
+  end
+
+  def fetch_garden_svg_each_year
+    svgs = (2008..Date.today.year).map { |year| fetch_garden_svg({to: "#{year}-12-31"}) }
+    svgs.dup.each do |svg|
+      rects = Nokogiri::HTML.parse(svg).css("rect")
+      break if rects.any? { |rect| contribute_count_of(rect) > 0 }
+      svgs.delete(svg)
+    end
+    svgs.reverse
+  end
+
+  def query_string(params)
+    return "" if params == nil
+    "?#{params.to_query}"
   end
 
   def consecutive_each(rects)
