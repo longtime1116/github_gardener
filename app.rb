@@ -91,13 +91,21 @@ class Garden
   end
 
   def fetch_garden_svg_each_year
-    svgs = (2008..Date.today.year).map { |year| fetch_garden_svg({to: "#{year}-12-31"}) }
+    svgs = (user_created_year..Date.today.year).map { |year| fetch_garden_svg({to: "#{year}-12-31"}) }
     svgs.dup.each do |svg|
       rects = Nokogiri::HTML.parse(svg).css("rect")
       break if rects.any? { |rect| contribute_count_of(rect) > 0 }
       svgs.delete(svg)
     end
     svgs.reverse
+  end
+
+  def github_user_info
+    Net::HTTP.get_response(URI.parse("https://api.github.com/users/#{user_name}")).body
+  end
+
+  def user_created_year
+    JSON.parse(github_user_info)["created_at"].to_date.year
   end
 
   def query_string(params)
