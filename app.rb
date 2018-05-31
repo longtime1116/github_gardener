@@ -21,17 +21,23 @@ get "/:name" do
   @garden = Garden.new(params[:name])
   redirect "/" if @garden.has_no_owner?
 
-  erb  :garden
+  erb :garden
+end
+
+get "/:name/by_year" do
+  @garden = Garden.new(params[:name])
+  redirect "/" if @garden.has_no_owner?
+
+  erb :gardens_by_year
 end
 
 
 class Garden
-  attr_reader :user_name, :garden_svg, :garden_svg_each_year
+  attr_reader :user_name, :garden_svg
 
   def initialize(user_name)
     @user_name = user_name
     @garden_svg = fetch_garden_svg
-    @garden_svg_each_year = fetch_garden_svg_each_year
     @rects = Nokogiri::HTML.parse(@garden_svg).css("rect")
   end
 
@@ -80,6 +86,13 @@ class Garden
     data
   end
 
+  def garden_svg_by_year
+    (user_created_year..Date.today.year).reduce({}) do |hash, year|
+      hash[year.to_s] = fetch_garden_svg({to: "#{year}-12-31"}) 
+      hash
+    end
+  end
+
   private
 
   def fetch_garden_svg(query_params = nil)
@@ -88,16 +101,6 @@ class Garden
     garden_svg = Net::HTTP.get_response(uri).body
     return nil if garden_svg.to_s == "Not Found"
     garden_svg
-  end
-
-  def fetch_garden_svg_each_year
-    svgs = (user_created_year..Date.today.year).map { |year| fetch_garden_svg({to: "#{year}-12-31"}) }
-    svgs.dup.each do |svg|
-      rects = Nokogiri::HTML.parse(svg).css("rect")
-      break if rects.any? { |rect| contribute_count_of(rect) > 0 }
-      svgs.delete(svg)
-    end
-    svgs.reverse
   end
 
   def github_user_info
