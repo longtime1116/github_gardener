@@ -5,6 +5,9 @@ require 'uri'
 require 'net/http'
 require 'nokogiri'
 require 'chartkick'
+require 'active_support'
+require 'active_support/core_ext'
+require 'date'
 
 get '/' do
   erb :index
@@ -18,7 +21,14 @@ get "/:name" do
   @garden = Garden.new(params[:name])
   redirect "/" if @garden.has_no_owner?
 
-  erb  :garden
+  erb :garden
+end
+
+get "/:name/by_year" do
+  @garden = Garden.new(params[:name])
+  redirect "/" if @garden.has_no_owner?
+
+  erb :gardens_by_year
 end
 
 
@@ -76,13 +86,34 @@ class Garden
     data
   end
 
+  def garden_svg_by_year
+    (user_created_year..Date.today.year).reduce({}) do |hash, year|
+      hash[year.to_s] = fetch_garden_svg({to: "#{year}-12-31"}) 
+      hash
+    end
+  end
+
   private
 
-  def fetch_garden_svg
-    uri = URI.parse("https://github.com/users/#{user_name}/contributions")
+  def fetch_garden_svg(query_params = nil)
+    uri = URI.parse("https://github.com/users/#{user_name}/contributions" +
+                    query_string(query_params))
     garden_svg = Net::HTTP.get_response(uri).body
     return nil if garden_svg.to_s == "Not Found"
     garden_svg
+  end
+
+  def github_user_info
+    Net::HTTP.get_response(URI.parse("https://api.github.com/users/#{user_name}")).body
+  end
+
+  def user_created_year
+    JSON.parse(github_user_info)["created_at"].to_date.year
+  end
+
+  def query_string(params)
+    return "" if params == nil
+    "?#{params.to_query}"
   end
 
   def consecutive_each(rects)

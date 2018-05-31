@@ -6,6 +6,7 @@
     <%= @garden.garden_svg %>
   </svg>
 </div>
+
 <div>
   <ul class="boxes">
     <li class="box">
@@ -65,4 +66,10 @@
   colors: ["#196127"],
 } %>
 
-<a href='/'>back</a>
+<div>
+  <a href=<%="/#{@garden.user_name}/by_year"%>>see gardens by year</a>
+</div>
+
+<div>
+  <a href='/'>back</a>
+</div>
