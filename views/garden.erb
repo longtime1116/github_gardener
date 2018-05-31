@@ -67,13 +67,9 @@
 } %>
 
 <div>
-  <% if @garden.garden_svg_each_year.present? %>
-    <% @garden.garden_svg_each_year.each do |svg| %>
-      <svg width=750px height=100px dominant-baseline="central">
-        <%= svg %>
-      </svg>
-    <% end %>
-  <% end %>
-<div>
+  <a href=<%="/#{@garden.user_name}/by_year"%>>see gardens by year</a>
+</div>
 
-<a href='/'>back</a>
+<div>
+  <a href='/'>back</a>
+</div>
