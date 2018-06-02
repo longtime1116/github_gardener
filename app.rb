@@ -21,14 +21,14 @@ get "/:name" do
   @garden = Garden.new(params[:name])
   redirect "/" if @garden.has_no_owner?
 
-  erb :garden
+  erb :garden, layout: :garden_layout
 end
 
 get "/:name/by_year" do
   @garden = Garden.new(params[:name])
   redirect "/" if @garden.has_no_owner?
 
-  erb :gardens_by_year
+  erb :gardens_by_year, layout: :garden_layout
 end
 
 
