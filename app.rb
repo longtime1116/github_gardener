@@ -87,7 +87,7 @@ class Garden
   end
 
   def garden_svg_by_year
-    (user_created_year..Date.today.year).reduce({}) do |hash, year|
+    (user_created_year || 2015..Date.today.year).reduce({}) do |hash, year|
       hash[year.to_s] = fetch_garden_svg({to: "#{year}-12-31"})
       hash
     end
@@ -108,7 +108,7 @@ class Garden
   end
 
   def user_created_year
-    JSON.parse(github_user_info)["created_at"].to_date.year
+    JSON.parse(github_user_info)["created_at"]&.to_date&.year
   end
 
   def query_string(params)
