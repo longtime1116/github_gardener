@@ -49,6 +49,22 @@ class Garden
     consecutive_each(@rects.reverse) { |_| 1 }
   end
 
+  def best_consecutive_days
+    max_count = 0
+    count = 0
+
+    @rects[0..-1].each do |rect|
+      if contribute_count_of(rect) == 0
+        max_count = [max_count, count].max
+        count = 0
+        next
+      end
+      count += 1
+    end
+
+    [max_count, count].max
+  end
+
   def consecutive_total_contribs
     consecutive_each(@rects.reverse) { |rect| contribute_count_of(rect) }
   end

@@ -1,3 +1,8 @@
+.first_low {
+  margin-left: 10px;
+  font-size: large;
+  margin-bottom: 20px;
+}
 .svg {
   margin-top: 10px
 }
@@ -13,4 +18,11 @@
 }
 .consecutive_result {
   font-size: 150%;
+}
+.best_record {
+  font-size: 40%;
+}
+.best_consecutive_count {
+  font-size: 150%;
+  font-weight: bold;
 }
