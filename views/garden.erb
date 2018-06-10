@@ -1,4 +1,4 @@
-<div>
+<div class="first_low">
   username: <a href=<%= "https://github.com/#{@garden.user_name}" %>><%= @garden.user_name %></a>
 </div>
 <div class=svg>
@@ -11,6 +11,13 @@
   <ul class="boxes">
     <li class="box">
       consecutive days
+      <div class="best_record">
+        <% if @garden.consecutive_days == @garden.best_consecutive_days %>
+          (best record updating)
+        <% else%>
+          (best record: <span class="best_consecutive_count"><%= @garden.best_consecutive_days %></span> days)
+        <% end %>
+      </div>
       <div class="consecutive_result">
         <%= @garden.consecutive_days %> days
       </div>
