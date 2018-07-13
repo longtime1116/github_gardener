@@ -104,7 +104,7 @@ class Garden
 
   def garden_svg_by_year
     (user_created_year || 2015..Date.today.year).reduce({}) do |hash, year|
-      hash[year.to_s] = fetch_garden_svg({to: "#{year}-12-31"})
+      hash[year.to_s] = fetch_garden_svg({from: "#{year}-1-1"})
       hash
     end
   end
