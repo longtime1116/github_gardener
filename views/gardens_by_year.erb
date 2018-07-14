@@ -5,9 +5,7 @@
 <div class=svg>
   <% @garden.garden_svg_by_year.reverse_each do |year, svg| %>
     <h1><%= year %></h1>
-    <svg width=750px height=100px dominant-baseline="central">
-      <%= svg %>
-    </svg>
+    <%= svg %>
   <% end %>
 </div>
 

@@ -4,7 +4,8 @@
   margin-bottom: 20px;
 }
 .svg {
-  margin-top: 10px
+  margin-top: 10px;
+  dominant-baseline: central;
 }
 .boxes {
   padding: 0;
