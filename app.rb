@@ -114,7 +114,8 @@ class Garden
   def fetch_garden_svg(query_params = nil)
     uri = URI.parse("https://github.com/users/#{user_name}/contributions" +
                     query_string(query_params))
-    garden_svg = Net::HTTP.get_response(uri).body
+    response = Net::HTTP.get_response(uri)
+    garden_svg = Nokogiri::HTML.parse(response.body).search("svg").to_s
     return nil if garden_svg.to_s == "Not Found"
     garden_svg
   end
