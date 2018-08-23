@@ -6,6 +6,7 @@
 .svg {
   margin-top: 10px;
   dominant-baseline: central;
+  font-size: 10px;
 }
 .boxes {
   padding: 0;
