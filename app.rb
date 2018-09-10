@@ -115,7 +115,7 @@ class Garden
     uri = URI.parse("https://github.com/users/#{user_name}/contributions" +
                     query_string(query_params))
     response = Net::HTTP.get_response(uri)
-    garden_svg = Nokogiri::HTML.parse(response.body).search("svg").to_s
+    garden_svg = Nokogiri::HTML.parse(response.body).search("svg").css(".js-calendar-graph-svg").to_s
     return nil if garden_svg.to_s == "Not Found"
     garden_svg
   end
