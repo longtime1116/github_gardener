@@ -84,7 +84,7 @@ class Garden
 
   def average_contribs_last_year
     return 0.0 if contributed_days_last_year == 0
-    (total_contribs_last_year / contributed_days_last_year).round(2)
+    (total_contribs_last_year.to_f / contributed_days_last_year).round(2)
   end
 
   def contribs_per_day_for_chart
