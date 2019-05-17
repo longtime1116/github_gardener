@@ -38,7 +38,9 @@ class Garden
   def initialize(user_name)
     @user_name = user_name
     @garden_svg = fetch_garden_svg
+    @entire_period_garden_svg = garden_svg_by_year.inject("") {|svg, each_year| svg += each_year[1]}
     @rects = Nokogiri::HTML.parse(@garden_svg).css("rect")
+    @entire_period_rects = Nokogiri::HTML.parse(@entire_period_garden_svg).css("rect")
   end
 
   def has_no_owner?
@@ -46,14 +48,14 @@ class Garden
   end
 
   def consecutive_days
-    consecutive_each(@rects.reverse) { |_| 1 }
+    consecutive_each(@entire_period_rects.reverse) { |_| 1 }
   end
 
   def best_consecutive_days
     max_count = 0
     count = 0
 
-    @rects[0..-1].each do |rect|
+    @entire_period_rects[0..-1].each do |rect|
       if contribute_count_of(rect) == 0
         max_count = [max_count, count].max
         count = 0
@@ -66,7 +68,7 @@ class Garden
   end
 
   def consecutive_total_contribs
-    consecutive_each(@rects.reverse) { |rect| contribute_count_of(rect) }
+    consecutive_each(@entire_period_rects.reverse) { |rect| contribute_count_of(rect) }
   end
 
   def consecutive_average_contribs
@@ -135,8 +137,8 @@ class Garden
 
   def consecutive_each(rects)
     count = 0
-
     rects[1..-1].each do |rect|
+      next if Date.parse(rect.attributes["data-date"].value) >= Date.today
       break if contribute_count_of(rect) == 0
       count += yield rect
     end
