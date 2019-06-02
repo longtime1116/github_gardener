@@ -138,7 +138,7 @@ class Garden
   def consecutive_each(rects)
     count = 0
     rects[1..-1].each do |rect|
-      next if Date.parse(rect.attributes["data-date"].value) >= Date.today
+      next if Date.parse(rect.attributes["data-date"].value) > Date.today
       break if contribute_count_of(rect) == 0
       count += yield rect
     end
