@@ -22,7 +22,7 @@ GEM
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
-    rack (2.0.6)
+    rack (2.1.4)
     rack-protection (2.0.4)
       rack
     sinatra (2.0.4)
@@ -51,7 +51,7 @@ DEPENDENCIES
   chartkick (~> 2.3.2)
   nokogiri (~> 1.8.5)
   pry
-  rack (~> 2.0.6)
+  rack (~> 2.1.4)
   sinatra (~> 2.0.2)
   sinatra-contrib (~> 2.0.1)
 
